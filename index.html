@@ -51,6 +51,15 @@
 					</p>
 				</section>
 
+                <section>
+                    <h3>Who am I?</h3>
+                    <p class="fragment" data-fragment-index="1">I'm Gianluca Arbezzano work in <span style="color:#13608C">Corley SRL</span> and I am passionate developer</p>
+                    <p class="fragment" data-fragment-index="2"><span style="color:#F47123">Doctrine Maintainer</span> and Open source contributor</p>
+                    <p class="fragment" data-fragment-index="3"><a href="https://github.com/gianarb">github.com/gianarb</a></p>
+                    <p class="fragment" data-fragment-index="4"><a href="https://twitter.com/gianarb">twitter.com/gianarb</a></p>
+                    <p class="fragment" data-fragment-index="5"><a href="http://gianarb.it">gianarb.it</a></p>
+                </section>
+
 				<section>
 					<h3>One penny is valueless but a lot of pennies build an empire</h3>
 					<ul>
@@ -61,7 +70,336 @@
 				</section>
 
 				<section>
+					<h3>Choice best libraries</h3>
+					<ul>
+                        <li class="fragment" data-fragment-index="1"><a href="http://php-di.org" target="_blank">PHP-DI</a> to build your services</li>
+                        <li class="fragment" data-fragment-index="2"><a href="https://github.com/zendframework/zend-eventmanager" target="_blank">Zend\EventManager</a> because this is an event driven middleware</li>
+                        <li class="fragment" data-fragment-index="3">plates, doctrine and all best libraries to reach your goal!</li>
+					</ul>
 				</section>
+
+				<section>
+					<h3>Flow</h3>
+                    <img src="event_flow.png">
+				</section>
+
+				<section>
+                    <blockquote>
+                        <p style="font-size:0.80em">In computer programming, a software framework is an abstraction in which software providing generic functionality can be selectively changed by additional user-written code, thus providing application-specific software</p>
+                        <p style="font-size:0.5em">cit. Wikipedia</p>
+                    </blockquote>
+                    <p class="fragment" data-fragment-index="1">Penny borns to build YOUR framework, because now the PHP ecosystem is awesome!</p>
+				</section>
+
+				<section>
+                    <h3>PHP ecosystem</h3>
+                    <p>There are projects for all but we choice for you a lot of them</p>
+                    <ul>
+                        <li class="fragment" data-fragment-index="1">PHP-DI</li>
+                        <li class="fragment" data-fragment-index="2">Zend\Diactoros</li>
+                        <li class="fragment" data-fragment-index="3">Zend\EventManager</li>
+                        <li class="fragment" data-fragment-index="3">FastRouter</li>
+                        <li class="fragment" data-fragment-index="4">Plates</li>
+                    </ul>
+                    <p>This is a <a href="https://github.com/pennyphp/classic-app">penny-classic-app</a></p>
+				</section>
+
+				<section>
+                    <h3>classic app</h3>
+                    <p><strong>Foldering</strong></p>
+                    <pre><code>
+├── app
+│   ├── Controller
+│   ├── Form
+│   ├── Entity
+│   ├── ...
+│   └── view
+├── bower.json
+├── composer.json
+├── config
+│   └── di.php
+├── Gruntfile.js
+├── package.json
+├── vendor
+└── public
+    └── index.php
+                    </code></pre>
+				</section>
+
+				<section>
+                    <h3>classic app</h3>
+                    <p><strong>bootstrap</strong></p>
+                    <pre><code lang="php">
+// public/index.php
+use GianArb\Penny\App;
+use Zend\Diactoros\Response\SapiEmitter;
+
+chdir(dirname(__DIR__));
+
+require 'vendor/autoload.php';
+$app = new App();
+$emitter = new SapiEmitter();
+$emitter->emit($app->run());
+                    </code></pre>
+				</section>
+
+				<section>
+                    <h3>classic app</h3>
+                    <p><strong>config</strong></p>
+                    <pre style="width: 100%;margin: 0px;font-size:0.45em;"><code lang="php">
+// config/di.php
+return [
+    'template' => \DI\object(\League\Plates\Engine::class)
+        ->constructor('./app/view/'),
+    'router' => function () {
+        return \FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
+            $r->addRoute('GET', '/', ['ClassicApp\Controller\IndexController', 'index']);
+        });
+    },
+];
+                    </code></pre>
+				</section>
+
+				<section>
+                    <h3>classic app</h3>
+                    <p><strong>controller</strong></p>
+                    <pre style="width: 100%;margin: 0px;font-size:0.40em;"><code lang="php">
+namespace ClassicApp\Controller;
+class IndexController
+{
+    /**
+     * @Inject("di")
+     */
+    private $di;
+
+    public function index(Request $request, Response $response)
+    {
+        $response->getBody()->write(' a beautiful job');
+
+        return $response;
+    }
+}
+                    </code></pre>
+                    <pre class="fragment" data-fragment-index="1">Non estende niente!!</pre>
+				</section>
+
+				<section>
+                    <h3>classic app</h3>
+                    <p><strong>Non estende niente!!</strong></p>
+                    <pre style="width: 100%;margin: 0px;font-size:0.40em;"><code lang="php">
+use GianArb\Penny\App;
+use GianArb\Penny\Config\Loader;
+use FastRoute;
+
+class IndexControllerTest extends PHPUnit_Framework_TestCase
+{
+    private $controller;
+    protected function setUp()
+    {
+        $config = Loader::load();
+        $config['router'] = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
+            $r->addRoute('GET', '/', ['TestApp\Controller\Index', 'index']);
+        });
+
+        $this->app = new App(App::buildContainer($config));
+    }
+    public function testIndex()
+    {
+        // mock request & response and used services
+        $this->app->run($request, $response);
+    }
+}
+                </code></pre>
+                <p class="fragment" data-fragment-index="1">Easy to understand</p>
+                <p class="fragment" data-fragment-index="2">Easy to test</p>
+				</section>
+
+				<section>
+                    <h3>penny test</h3>
+                    <pre style="width: 100%;margin: 0px;font-size:0.37em;"><code lang="php">
+use Zend\Diactoros\Request;
+use Zend\Diactoros\Response;
+use Zend\Diactoros\Uri;
+
+public function testIndex()
+{
+    $request = (new Request())
+    ->withUri(new Uri('/'))
+    ->withMethod('GET');
+    $response = new Response();
+
+    $response = $this->app->run($request, $response);
+    $this->assertEquals(200, $response->getStatusCode());
+}
+                    </code></pre>
+				</section>
+
+				<section>
+                    <h3>penny test with dependency injection</h3>
+                    <pre style="width: 100%;margin: 0px;font-size:0.37em;"><code lang="php">
+public function setUp()
+{
+    $config = Loader::load();
+    $config['router'] = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
+        $r->addRoute('GET', '/', ['TestApp\Controller\Index', 'diTest']);
+    });
+
+    $this->container = App::buildContainer($config);
+}
+                    </code></pre>
+				</section>
+
+				<section>
+                    <h3>penny test with dependency injection</h3>
+                    <pre style="width: 100%;margin: 0px;font-size:0.37em;"><code lang="php">
+public function testInjectionHttpFlow()
+{
+    $this->container->set('troyan', 'call me');
+    $app = new App($this->container);
+
+    $request = (new Request())
+    ->withUri(new Uri('/'))
+    ->withMethod('GET');
+    $response = new Response();
+
+    $response = $app->run($request, $response);
+    $this->assertEquals(200, $response->getStatusCode());
+    $this->assertEquals('call me', $response->getBody()->__toString());
+}
+                    </code></pre>
+				</section>
+
+				<section>
+                    <h3>event system</h3>
+                    <p class="fragment" data-fragment-index="1">You can increase the application flow with listener</p>
+                    <p class="fragment" data-fragment-index="2" style="color:#fff">Controller matched is a listener with priority 0</p>
+                    <p class="fragment" data-fragment-index="3">Controller matched is a listener with priority 0</p>
+                    <p class="fragment" data-fragment-index="4" style="color:#fff">Penny triggers two events <strong>controller.method</strong> and <strong>controller.method_error</strong> to catch errors</p>
+                </section>
+
+				<section>
+                    <h3>event system</h3>
+                    <p>Use dependency injection to attach your liteners</p>
+                    <pre style="width: 100%;margin: 0px;font-size:0.37em;"><code lang="php">
+// config/di.php
+return [
+    'event_manager' => \DI\decorate(function($eventManager, $container) {
+        $eventManager->attach(
+            "ERROR_DISPATCH",
+            [
+                $container->get(\ClassicApp\EventListener\DispatcherExceptionListener::class),
+                "onError"
+            ]
+        );
+        $eventManager->attach("*_error", [
+            $container->get(\ClassicApp\EventListener\ExceptionListener::class),
+            "onError"
+        ]);
+        return $eventManager;
+    }),
+    \ClassicApp\EventListener\ExceptionListener::class
+        => \DI\object(\ClassicApp\EventListener\ExceptionListener::class)
+            ->constructor(\DI\get("template")),
+    \ClassicApp\EventListener\DispatcherExceptionListener::class
+        => \DI\object(\ClassicApp\EventListener\DispatcherExceptionListener::class)
+            ->constructor(\DI\get("template")),
+    ...
+];
+                    </code></pre>
+				</section>
+
+				<section>
+                    <h3>listener</h3>
+                    <pre style="width: 100%;margin: 0px;font-size:0.37em;"><code lang="php">
+class ExceptionListener
+{
+    private $template;
+
+    public function __construct($template)
+    {
+        $this->template = $template;
+    }
+
+    public function onError($event)
+    {
+        $e = $event->getException();
+        $response = $event->getResponse()->withStatus($e->getCode());
+        $event->setResponse($response);
+        $response->getBody()->write($this->template->render("error/50x", [
+            'title' => $e->getMessage(),
+            'exception' => $e,
+        ]));
+    }
+}
+                    </code></pre>
+				</section>
+
+                <section>
+                    <h3>Interoperability without abstaction layer</h3>
+                    <p class="fragment" data-fragment-index="1">I'm non interested to help you to switch between libraries</p>
+                    <p class="fragment" data-fragment-index="2" style="color:#fff">We are not crazy, monday plates, sunday zend\view is not our use case</p>
+                    <p class="fragment" data-fragment-index="3">We are very happy to see your implementation, psr-7 and container-interop are examples of interoperability</p>
+                </section>
+
+                <section>
+                    <h3>With penny you can change also the http layer</h3>
+                    <pre style="font-size:0.40em;"><code  lang="php">
+use GianArb\Penny\App;
+use GianArb\Penny\Config\Loader;
+use FastRoute;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+$config = Loader::load();
+$config['router'] = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
+    $r->addRoute('GET', '/', [get_class($this), 'index']);
+});
+$config['dispatcher'] = \Di\object('GianArb\PennyTest\Utils\FastSymfonyDispatcher')
+    ->constructor(\Di\get("router"));
+$this->app = new App(App::buildContainer($config));
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h3>With penny you can change also the http layer</h3>
+                    <pre style="font-size:0.40em;"><code  lang="php">
+$this->app->getContainer()
+    ->get("event_manager")
+    ->attach("symfonykerneltest.index_error",
+        function ($e) use (&$requestTest, &$responseTest) {
+        $requestTest = $e->getRequest();
+        $responseTest = $e->getResponse();
+    });
+$request = Request::create("/", "GET");
+$response = new Response();
+$this->app->run($request, $response);
+$this->assertSame($request, $requestTest);
+$this->assertSame($response, $responseTest);
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h3>Penny use Z-ray Zend Server-less</h3>
+                    <p>Easy to debug with docker and zray</p>
+                    <img src="zray.png"/>
+                    <p style="font-size:0.6em">Thanks <a href="https://github.com/fntlnz">github.com/fntlnz</a>
+                </section>
+
+
+                <section>
+                    <h3>links</h3>
+                    <ul>
+                        <li><a href="http://pennyphp.org" target="_blank">pennyphp.org</a></li>
+                        <li><a href="http://docs.pennyphp.org" target="_blank">docs.pennyphp.org</a></li>
+                        <li><a href="http://github.com/pennyphp" target="_blank">github.com/pennyphp</a></li>
+                        <li><a href="https://samsonasik.wordpress.com/2015/09/08/getting-closer-with-penny-a-php-framework/" target="_blank">Getting Closer with Penny – A PHP Framework</a> <span style="font-size:0.4em">by @samsonasik</span></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Thanks</h3>
+                    <p><a href="https://github.com/gianarb">github.com/gianarb</a></p>
+                </section>
 
 			</div>
 
