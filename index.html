@@ -278,8 +278,7 @@ public function testInjectionHttpFlow()
                     <h3>event system</h3>
                     <p class="fragment" data-fragment-index="1">You can increase the application flow with listener</p>
                     <p class="fragment" data-fragment-index="2" style="color:#fff">Controller matched is a listener with priority 0</p>
-                    <p class="fragment" data-fragment-index="3">Controller matched is a listener with priority 0</p>
-                    <p class="fragment" data-fragment-index="4" style="color:#fff">Penny triggers two events <strong>controller.method</strong> and <strong>controller.method_error</strong> to catch errors</p>
+                    <p class="fragment" data-fragment-index="3">Penny triggers two events <strong>controller.method</strong> and <strong>controller.method_error</strong> to catch errors</p>
                 </section>
 
 				<section>
@@ -334,6 +333,50 @@ class ExceptionListener
             'title' => $e->getMessage(),
             'exception' => $e,
         ]));
+    }
+}
+                    </code></pre>
+				</section>
+
+
+				<section>
+                    <h3>"pseudo" flow</h3>
+                    <pre style="width: 100%;margin: 0px;font-size:0.37em;"><code lang="php">
+// config/di.php
+return [
+    'event_manager' => \DI\decorate(function($eventManager, $container) {
+        $eventManager->attach("index.dashboard", [
+                $container->get(\ClassicApp\EventListener\AuthListener::class), "check"
+            ], 100);
+        $eventManager->attach("index.dashboard", [
+                $container->get(\ClassicApp\EventListener\LogListener::class), "info"
+            ], 1000);
+        return $eventManager;
+    }),
+    \ClassicApp\EventListener\LogListener::class
+        => \DI\object(\ClassicApp\EventListener\LogListener::class)
+            ->constructor(\DI\get("monolog")),
+    \ClassicApp\EventListener\AuthListener::class
+        => \DI\object(\ClassicApp\EventListener\AuthListener::class)
+            ->constructor(\DI\get("auth_service")),
+    ...
+];
+                    </code></pre>
+				</section>
+
+				<section>
+                    <h3>Stop flow</h3>
+                    <pre style="width: 100%;margin: 0px;font-size:0.37em;"><code lang="php">
+namespace \ClassicApp\EventListener;
+class AuthListener
+{
+    public function check($event)
+    {
+        $request = $event->getRequest();
+        if($this->authService->isAuthorized($request) {
+            return $event;
+        }
+        $event->stopPropagation();
     }
 }
                     </code></pre>
