@@ -42,13 +42,10 @@
 			<div class="slides">
 				<section>
 					<h1>penny</h1>
-					<p>
-                        <img src="pennyphp.png" style="background-color:#fff" width="30%"/>
-					<p>
+                    <img src="pennyphp.png" style="background-color:#fff" width="30%"/>
                     <h3>PHP middleware Framework</h3>
-					<p>
-						<small>Developed by <a href="http://github.com/gianarb">GianArb</a> and <a href="https://github.com/pennyphp/penny/graphs/contributors">a little community</a></small>
-					</p>
+                    <p><iframe src="https://ghbtns.com/github-btn.html?user=pennyphp&repo=penny&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe></p>
+                    <p><small>Developed by <a href="http://github.com/gianarb">GianArb</a> and <a href="https://github.com/pennyphp/penny/graphs/contributors">a little community</a></small></p>
 				</section>
 
                 <section>
@@ -74,7 +71,7 @@
 					<ul>
                         <li class="fragment" data-fragment-index="1"><a href="http://php-di.org" target="_blank">PHP-DI</a> to build your services</li>
                         <li class="fragment" data-fragment-index="2"><a href="https://github.com/zendframework/zend-eventmanager" target="_blank">Zend\EventManager</a> because this is an event driven middleware</li>
-                        <li class="fragment" data-fragment-index="3">plates, doctrine and all best libraries to reach your goal!</li>
+                        <li class="fragment" data-fragment-index="3">plates, doctrine and all other libraries to reach your goal!</li>
 					</ul>
 				</section>
 
@@ -344,6 +341,11 @@ class ExceptionListener
                     <pre style="width: 100%;margin: 0px;font-size:0.37em;"><code lang="php">
 // config/di.php
 return [
+    'router' => function () {
+        return \FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
+            $r->addRoute('GET', '/', ['ClassicApp\Controller\Index', 'dashboard']);
+        });
+    },
     'event_manager' => \DI\decorate(function($eventManager, $container) {
         $eventManager->attach("index.dashboard", [
                 $container->get(\ClassicApp\EventListener\AuthListener::class), "check"
@@ -466,7 +468,7 @@ $this->assertSame($response, $responseTest);
 				history: true,
 				center: true,
 
-				transition: 'slide', // none/fade/slide/convex/concave/zoom
+				transition: 'none', // none/fade/slide/convex/concave/zoom
 
 				// Optional reveal.js plugins
 				dependencies: [
