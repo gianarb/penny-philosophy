@@ -185,7 +185,7 @@ class IndexController
 
 				<section>
                     <h3>classic app</h3>
-                    <p><strong>Non estende niente!!</strong></p>
+                    <p><strong>You can test application flow</strong></p>
                     <pre style="width: 100%;margin: 0px;font-size:0.40em;"><code lang="php">
 use GianArb\Penny\App;
 use GianArb\Penny\Config\Loader;
@@ -193,7 +193,8 @@ use FastRoute;
 
 class IndexControllerTest extends PHPUnit_Framework_TestCase
 {
-    private $controller;
+    private $app;
+
     protected function setUp()
     {
         $config = Loader::load();
@@ -203,7 +204,7 @@ class IndexControllerTest extends PHPUnit_Framework_TestCase
 
         $this->app = new App(App::buildContainer($config));
     }
-    public function testIndex()
+    public function testIndex(i)
     {
         // mock request & response and used services
         $this->app->run($request, $response);
@@ -228,7 +229,10 @@ public function testIndex()
     ->withMethod('GET');
     $response = new Response();
 
-    $response = $this->app->run($request, $response);
+    $controller = new IndexController();
+    // mock controller dependencies
+
+    $response = $controller->run($request, $response);
     $this->assertEquals(200, $response->getStatusCode());
 }
                     </code></pre>
